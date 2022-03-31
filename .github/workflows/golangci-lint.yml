@@ -32,6 +32,13 @@ jobs:
         with:
           go-version: "${{ steps.goversion.outputs.version }}"
 
+      - name: build-protobuf
+        env:
+          GOOS: ${{ matrix.GOOS }}
+        run: |
+          mage genProto
+          git diff --quiet
+
       - name: golangci-lint
         env:
           GOOS: ${{ matrix.GOOS }}
