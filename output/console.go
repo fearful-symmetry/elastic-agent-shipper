@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/elastic/elastic-agent-shipper/api"
+	"github.com/elastic/elastic-agent-shipper-client/pkg/proto/messages"
 	"github.com/elastic/elastic-agent-shipper/queue"
 )
 
@@ -37,7 +37,7 @@ func (out *ConsoleOutput) Start() {
 				break
 			}
 			for i := 0; i < batch.Count(); i++ {
-				if event, ok := batch.Event(i).(*api.Event); ok {
+				if event, ok := batch.Entry(i).(*messages.Event); ok {
 					out.send(event)
 				}
 			}
@@ -48,12 +48,12 @@ func (out *ConsoleOutput) Start() {
 			// shipper to track events by their queue IDs so outputs
 			// can report status back to the server; see
 			// https://github.com/elastic/elastic-agent-shipper/issues/27.
-			batch.ACK()
+			batch.Done()
 		}
 	}()
 }
 
-func (*ConsoleOutput) send(event *api.Event) {
+func (*ConsoleOutput) send(event *messages.Event) {
 	//nolint: forbidigo // Console output is intentional
 	fmt.Printf("%v\n", event)
 }
