@@ -93,6 +93,7 @@ func (c *clientHandler) Run(cfg config.ShipperConfig, unit *client.Unit) error {
 	if err != nil {
 		return fmt.Errorf("error loading outputs: %w", err)
 	}
+	unit.RegisterDiagnosticHook("queue", "queue metrics", "", "application/json", monHandler.DiagnosticsCallback())
 
 	_ = unit.UpdateState(client.UnitStateConfiguring, "starting shipper server", nil)
 

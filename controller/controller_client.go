@@ -198,7 +198,6 @@ func runController(ctx context.Context, agentClient client.V2) error {
 			return nil
 
 		case change := <-agentClient.UnitChanges():
-
 			switch change.Type {
 			case client.UnitChangedAdded: // The agent is starting the shipper, or we added a new processor
 				go handler.handleUnitAdded(change.Unit)
