@@ -6,29 +6,64 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"net"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	"github.com/elastic/elastic-agent-client/v7/pkg/client"
 	"github.com/elastic/elastic-agent-libs/logp"
 	"github.com/elastic/elastic-agent-shipper/config"
-	"github.com/elastic/elastic-agent-shipper/monitoring"
-	"github.com/elastic/elastic-agent-shipper/output"
-	"github.com/elastic/elastic-agent-shipper/queue"
-	"github.com/elastic/elastic-agent-shipper/server"
-
-	pb "github.com/elastic/elastic-agent-shipper-client/pkg/proto"
 )
 
 // LoadAndRun loads the config object and runs the gRPC server
 func LoadAndRun() error {
+	cfg, err := config.ReadConfigFromFile()
+	switch {
+	case err == nil:
+		return RunUnmanaged(cfg)
+	case errors.Is(err, config.ErrConfigIsNotSet):
+		return RunManaged(cfg)
+	default:
+		return err
+	}
+}
+
+// RunUnmanaged runs the shipper out of a local config file without using the control protocol.
+func RunUnmanaged(cfg config.ShipperConfig) error {
+	log := logp.L()
+	runner, err := NewServerRunner(cfg)
+	if err != nil {
+		return err
+	}
+	done := make(doneChan)
+	go func() {
+		err = runner.Start()
+		done <- struct{}{}
+	}()
+
+	// On termination signals, gracefully stop the shipper
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+
+	sig := <-sigc
+	switch sig {
+	case syscall.SIGINT, syscall.SIGTERM:
+		log.Debug("Received sigterm/sigint, stopping")
+	case syscall.SIGHUP:
+		log.Debug("Received sighup, stopping")
+	}
+
+	_ = runner.Close()
+
+	<-done
+
+	return err
+}
+
+// RunManaged runs the shipper receiving configuration from the agent using the control protocol.
+func RunManaged(cfg config.ShipperConfig) error {
 	agentClient, _, err := client.NewV2FromReader(os.Stdin, client.VersionInfo{Name: "elastic-agent-shipper", Version: "v2"})
 	if err != nil {
 		return fmt.Errorf("error reading control config from agent: %w", err)
@@ -39,6 +74,7 @@ func LoadAndRun() error {
 
 	return err
 }
+<<<<<<< HEAD
 
 // handle shutdown of the shipper
 func handleShutdown(stopFunc func(), done doneChan) {
@@ -151,3 +187,5 @@ func loadMonitoring(cfg config.ShipperConfig, queue *queue.Queue) (*monitoring.Q
 
 	return mon, nil
 }
+=======
+>>>>>>> upstream/main
