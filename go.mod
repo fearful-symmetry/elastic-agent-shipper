@@ -16,12 +16,7 @@ require (
 	github.com/elastic/elastic-agent-shipper-client v0.4.0
 	github.com/elastic/go-ucfg v0.8.6
 	github.com/gofrs/uuid v4.2.0+incompatible
-<<<<<<< HEAD
-	github.com/magefile/mage v1.14.0
-	github.com/pkg/errors v0.9.1
-=======
 	github.com/magefile/mage v1.13.0
->>>>>>> upstream/main
 	github.com/stretchr/testify v1.7.1
 	go.elastic.co/apm v1.15.0
 	go.elastic.co/go-licence-detector v0.5.0
@@ -81,15 +76,11 @@ require (
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.12 // indirect
-<<<<<<< HEAD
-=======
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/jcmturner/aescts.v1 v1.0.1 // indirect
 	gopkg.in/jcmturner/dnsutils.v1 v1.0.1 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/jcmturner/gokrb5.v7 v7.5.0 // indirect
 	gopkg.in/jcmturner/rpc.v1 v1.1.0 // indirect
->>>>>>> upstream/main
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	howett.net/plist v1.0.0 // indirect
